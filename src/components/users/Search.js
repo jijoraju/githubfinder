@@ -11,8 +11,12 @@ export class Search extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.props.searchUser(this.state.text);
-    this.setState({ text: '' });
+    if (this.state.text === '' || this.state.text === undefined) {
+      this.props.alertUser('Enter something to search', 'light');
+    } else {
+      this.props.searchUser(this.state.text);
+      this.setState({ text: '' });
+    }
   };
 
   onReset = (e) => {
