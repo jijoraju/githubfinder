@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import './App.css';
 import Navbar from './components/layouts/Navbar';
+import Users from './components/users/Users';
 import User from './components/users/User';
 import axios from 'axios';
 import Search from './components/users/Search';
@@ -11,17 +12,10 @@ import { About } from './components/pages/About';
 class App extends Component {
   state = {
     users: [],
+    user: {},
     loading: false,
     alert: null,
   };
-
-  async componentDidMount() {
-    this.setState({ loading: true });
-    const res = await axios.get(
-      `https://api.github.com/users?clientid=${process.env.REACT_APP_GITHUB_CLEINTID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-    this.setState({ users: res.data, loading: false });
-  }
 
   searchUser = async (text) => {
     this.setState({ loading: true });
@@ -29,6 +23,14 @@ class App extends Component {
       `https://api.github.com/search/users?q=${text}&clientid=${process.env.REACT_APP_GITHUB_CLEINTID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
     );
     this.setState({ users: res.data.items, loading: false });
+  };
+
+  getUser = async (username) => {
+    this.setState({ loading: true });
+    const res = await axios.get(
+      `https://api.github.com/users/${username}?clientid=${process.env.REACT_APP_GITHUB_CLEINTID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+    );
+    this.setState({ user: res.data, loading: false });
   };
 
   resetUsers = () => {
@@ -43,6 +45,7 @@ class App extends Component {
     }, 5000);
     console.log(this.state.alert);
   };
+
   render() {
     return (
       <Router>
@@ -62,7 +65,7 @@ class App extends Component {
                       showReset={this.state.users.length > 0 ? true : false}
                       alertUser={this.alertUser}
                     />
-                    <User
+                    <Users
                       users={this.state.users}
                       loading={this.state.loading}
                     />
@@ -70,6 +73,18 @@ class App extends Component {
                 )}
               />
               <Route exact path='/about' component={About} />
+              <Route
+                exact
+                path='/users/:username'
+                render={(props) => (
+                  <User
+                    {...props}
+                    getUser={this.getUser}
+                    user={this.state.user}
+                    loading={this.state.loading}
+                  />
+                )}
+              />
             </Switch>
           </div>
         </div>
