@@ -1,47 +1,41 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-export class Search extends Component {
-  state = {
-    text: '',
+const Search = ({ searchUser, alertUser, resetUsers, showReset }) => {
+  const [text, setText] = useState('');
+
+  const onChange = (e) => {
+    setText(e.target.value);
   };
 
-  onChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
-
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    if (this.state.text === '' || this.state.text === undefined) {
-      this.props.alertUser('Enter something to search', 'light');
+    if (text === '' || text === undefined) {
+      alertUser('Enter something to search', 'light');
     } else {
-      this.props.searchUser(this.state.text);
-      this.setState({ text: '' });
+      searchUser(text);
+      setText('');
     }
   };
 
-  onReset = (e) => {
+  const onReset = (e) => {
     e.preventDefault();
-    this.props.resetUsers();
-    this.setState({ text: '' });
+    resetUsers();
+    setText('');
   };
 
-  render() {
-    return (
-      <form className='form' onSubmit={this.onSubmit} onReset={this.onReset}>
-        <input
-          type='text'
-          name='text'
-          placeholder='Search User here'
-          value={this.state.text}
-          onChange={this.onChange}
-        />
-        <input type='submit' className='btn btn-dark btn-block' />
-        {this.props.showReset && (
-          <input type='reset' className='btn btn-light btn-block' />
-        )}
-      </form>
-    );
-  }
-}
+  return (
+    <form className='form' onSubmit={onSubmit} onReset={onReset}>
+      <input
+        type='text'
+        name='text'
+        placeholder='Search User here'
+        value={text}
+        onChange={onChange}
+      />
+      <input type='submit' className='btn btn-dark btn-block' />
+      {showReset && <input type='reset' className='btn btn-light btn-block' />}
+    </form>
+  );
+};
 
 export default Search;
